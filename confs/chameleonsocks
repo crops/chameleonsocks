@@ -1,0 +1,24 @@
+#!/bin/bash
+
+#read proxy and port from environment if they are set
+if [ ! -z "$PROXY" ] && [ ! -z "$PORT" ]; then
+ sed -i 's/proxy.mine.com/'$PROXY'/g' /etc/redsocks.conf
+ sed -i '/local_port = 1080/!s/port = 1080/port = '$PORT'/g' /etc/redsocks.conf
+fi;
+
+#Docker stop(SIGTERM) handler
+redsocks_handler() {
+  /etc/init.d/redsocks stop
+  exit 143;
+}
+
+/etc/init.d/redsocks start
+
+trap 'redsocks_handler' SIGTERM
+
+#wait for redsocks to stop and exit
+while true
+do
+  tail -f /dev/null & wait ${!}
+done
+

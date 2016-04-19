@@ -1,0 +1,27 @@
+# This file describes the standard way to build a redsocks image for
+# generic firewalls
+#
+# Usage:
+#
+# docker build -t todorez/chameleonsocks -f Dockerfile.chameleonsocks .
+
+FROM debian:wheezy
+MAINTAINER Todor Minchev <todor.minchev@linux.intel.com>
+ENV CHAMELEONSOCKS_VERSION 1.0
+
+# Install dependencies
+RUN apt-get update && apt-get install -y \
+	redsocks \
+	curl \
+	iptables
+
+RUN mkdir -p /tmp/chameleonsocks/confs/
+COPY confs /tmp/chameleonsocks/confs/
+RUN chmod 755 /tmp/chameleonsocks/confs/redsocks && \
+chmod 755 /tmp/chameleonsocks/confs/chameleonsocks && \
+mv /tmp/chameleonsocks/confs/redsocks /etc/init.d/ && \
+mv /tmp/chameleonsocks/confs/redsocks.conf /etc/  && \
+mv /tmp/chameleonsocks/confs/chameleonsocks /bin/ && \
+echo ${CHAMELEONSOCKS_VERSION} > /etc/chameleonsocks-version
+
+ENTRYPOINT ["chameleonsocks"]
