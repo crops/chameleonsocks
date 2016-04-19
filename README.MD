@@ -14,11 +14,23 @@ https://docs.docker.com/engine/installation/#on-linux
 
 ###  2 . Download chameleonsocks installer/upgrade script
 
-**Execute the following command to download the installer and make it executable**
+* **Switch to the root user**
 
 ```
-wget https://raw.githubusercontent.com/todorez/chameleonsocks/master/chameleonsocks.sh
-&& chmod 755 chameleonsocks.sh
+su root
+```
+
+* **Set https_proxy environment variable so you can download the installer**
+
+```
+export https_proxy=https://my.proxy.com:port_number
+```
+
+
+* **Execute the following command to download the installer and make it executable**
+
+```
+wget https://raw.githubusercontent.com/todorez/chameleonsocks/master/chameleonsocks.sh && chmod 755 chameleonsocks.sh
 ```
 
 ###  3 . Configure your proxy server and exception rules
