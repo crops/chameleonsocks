@@ -1,4 +1,21 @@
-# Do not exacute or source this file directly. It will be sourced by chameleonsocks.sh
+#
+# Copyright (C) 2016 Intel Corporation
+#
+# Author: Todor Minchev <todor.minchev@linux.intel.com>
+#
+# This program is free software; you can redistribute it and/or modify it
+# under the terms and conditions of the GNU General Public License,
+# version 2, or (at your option) any later version, as published by
+# the Free Software Foundation.
+#
+# This program is distributed in the hope it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+# FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+# more details.
+#
+
+# Do not execute or source this file directly. It will be sourced
+# by chameleonsocks.sh
 
 echo -e "\nDownload chameleonsocks image"
 wget https://dl.dropboxusercontent.com/u/19449889/chameleonsocks.tar

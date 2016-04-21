@@ -1,4 +1,14 @@
+#
+# Copyright: 2011-2013 Apollon Oikonomopoulos <apoikos@gmail.com>
+#
+# License:
+# Copying and distribution of this package, with or without
+# modification, are permitted in any medium without royalty
+# provided the copyright notice and this notice are preserved.
+#
+
 #!/bin/sh
+
 ### BEGIN INIT INFO
 # Provides:          redsocks
 # Required-Start:    $network $local_fs $remote_fs
