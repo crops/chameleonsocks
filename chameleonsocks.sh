@@ -25,41 +25,105 @@ if [ "$(id -u)" != "0" ]; then
    exit 1
 fi
 
+usage () {
+  echo -e "\nUsage \n\n$0 [option]\n"
+  echo -e "Options:\n"
+  echo -e "--install      : Install chameleonsocks"
+  echo -e "--upgrade      : Upgrade existing installation"
+  echo -e "--uninstall    : Uninstall chameleonsocks"
+  echo -e "--install-ui   : Install container management UI"
+  echo -e "--uninstall-ui : Uninstall container management UI"
+  echo -e "--start        : Stop chameleonsocks"
+  echo -e "--stop         : Start chameleonsocks"
+  echo -e "--version      : Display chameleonsocks version\n"
+  exit 1;
+}
+
+remove_container () {
+  local CONTAINER=$1
+  echo -e "\nStop  $CONTAINER container"
+  docker stop $CONTAINER || \
+  { echo "Stopping $CONTAINER failed" ; exit 1; }
+
+  echo -e "\nRemove $CONTAINER container"
+  docker rm -f $CONTAINER || \
+  { echo "Removing $CONTAINER container failed" ; exit 1; }
+
+}
+
+uninstall () {
+  remove_container chameleonsocks
+  echo -e "\nRemove chameleonsocks image"
+  docker rmi todorez/chameleonsocks
+
+  if [ $? -eq 0 ]; then
+    echo -e "\nRemoved chameleonsocks image"
+  else
+    echo -e "\nFailed to remove chameleonsocks image"; exit 1
+  fi
+}
+
+
+uninstall_ui () {
+  remove_container dockerui
+  echo -e "\nRemove DockerUI image"
+  docker rmi uifd/ui-for-docker
+
+  if [ $? -eq 0 ]; then
+    echo -e "\nRemoved DockerUI image"
+  else
+    echo -e "\nFailed to remove DockerUI image"; exit 1
+  fi
+}
+
 if [[ $# -eq 0 ]] ; then
-  echo -e "\nUsage \n\n$0 --install \n\nOR\n\n$0 --upgrade\n"
-  exit 0
+  usage
 fi
 
 for i in "$@"
 do
   case $i in
     --install)
-      source <(wget -O- https://raw.githubusercontent.com/todorez/chameleonsocks/master/chameleonsocks-install.sh)
+      source <(wget -O- https://raw.githubusercontent.com/todorez/chameleonsocks/master/chameleonsocks-install.sh) || \
+      { echo 'Downloading chameleonsocks failed' ; exit 1; }
     ;;
     --upgrade)
-      echo -e "\nStop chameleonsocks container"
-      docker stop chameleonsocks
-
-      echo -e "\nRemove chameleonsocks container"
-      docker rm -f chameleonsocks
-
-      echo -e "\nRemove chameleonsocks image"
-      docker rmi todorez/chameleonsocks
+      uninstall
+      echo -e "\nInstall latest chameleonsocks image"
+      source <(wget -O- https://raw.githubusercontent.com/todorez/chameleonsocks/master/chameleonsocks-install.sh) || \
+      { echo 'Installing chameleonsocks failed' ; exit 1; }
+    ;;
+    --uninstall)
+      uninstall
+    ;;
+    --install-ui)
+      docker run -d --restart=always -p 7777:9000 --privileged --name \
+      dockerui -v /var/run/docker.sock:/var/run/docker.sock \
+      uifd/ui-for-docker
 
       if [ $? -eq 0 ]; then
-        echo -e "\nSUCCESS: Remove chameleonsocks image"
+        echo -e "\nAccess Docker UI on http://localhost:7777"
       else
-        echo -e "\nFAIL: Remove chameleonsocks image"
-        echo -e "\nIf chameleonsocks is not installed please run the "chameleonsocks.sh --install" instead"
-        exit 0
+        echo -e "\nInstalling Docker UI failed" ; exit 1;
       fi
-
-      echo -e "\nInstall latest chameleonsocks image"
-      source <(wget -O- https://raw.githubusercontent.com/todorez/chameleonsocks/master/chameleonsocks-install.sh)
+    ;;
+    --uninstall-ui)
+      uninstall_ui
+    ;;
+    --start)
+      docker start chameleonsocks || \
+      { echo 'Starting chameleonsocks failed' ; exit 1; }
+    ;;
+    --stop)
+      docker stop chameleonsocks || \
+      { echo 'Stopping chameleonsocks failed' ; exit 1; }
+    ;;
+    --version)
+      docker exec chameleonsocks cat /etc/chameleonsocks-version || \
+      { echo 'Getting chameleonsocks version failed' ; exit 1; }
     ;;
     *)
-      echo -e "\nUsage \n\n$0 --install \n\nOR\n\n$0 --upgrade\n"
-      exit 0
+      usage
     ;;
   esac
 done
