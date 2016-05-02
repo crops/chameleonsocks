@@ -25,6 +25,7 @@ if [ "$(id -u)" != "0" ]; then
    exit 1
 fi
 
+
 usage () {
   echo -e "\nUsage \n\n$0 [option]\n"
   echo -e "Options:\n"
@@ -64,6 +65,16 @@ uninstall () {
 }
 
 
+check_docker () {
+  docker -v
+  if [ $? -eq 0 ]; then
+   echo -e "Docker installation verified"
+  else
+    echo -e "\nPlease make sure that Docker is installed and running"; exit 1
+  fi
+}
+
+
 uninstall_ui () {
   remove_container dockerui
   echo -e "\nRemove DockerUI image"
@@ -75,6 +86,8 @@ uninstall_ui () {
     echo -e "\nFailed to remove DockerUI image"; exit 1
   fi
 }
+
+check_docker
 
 if [[ $# -eq 0 ]] ; then
   usage
