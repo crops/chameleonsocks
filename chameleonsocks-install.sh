@@ -41,7 +41,7 @@ echo -e "\nRemove temporary chameleonsocks image tarball"
 rm -rf ./chameleonsocks.tar
 
 echo -e "\nCreate chameleonsocks image"
-docker create --restart=always --privileged --name chameleonsocks --net=host -e PROXY=$PROXY -e PORT=$PORT todorez/chameleonsocks:latest
+docker create --restart=always --privileged --name chameleonsocks --net=host -e PROXY=$PROXY -e PORT=$PORT -e PROXY_TYPE=$PROXY_TYPE todorez/chameleonsocks:latest
 
 if [ $? -eq 0 ]; then
   echo -e "\nSUCCESS: Create chameleonsocks image"
