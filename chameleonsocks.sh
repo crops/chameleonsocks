@@ -16,15 +16,16 @@
 
 #!/usr/bin/env bash
 
+#possible PROXY_TYPE values: socks4, socks5, http-connect, http-relay
 PROXY=my.proxy.com
 PORT=1080
+PROXY_TYPE=socks5
 EXCEPTIONS=/path/to/exceptions/file
 
 if [ "$(id -u)" != "0" ]; then
    echo "Run this installer as root" 1>&2
    exit 1
 fi
-
 
 usage () {
   echo -e "\nUsage \n\n$0 [option]\n"
@@ -64,7 +65,6 @@ uninstall () {
   fi
 }
 
-
 check_docker () {
   docker -v
   if [ $? -eq 0 ]; then
@@ -73,7 +73,6 @@ check_docker () {
     echo -e "\nPlease make sure that Docker is installed and running"; exit 1
   fi
 }
-
 
 uninstall_ui () {
   remove_container dockerui
@@ -87,6 +86,15 @@ uninstall_ui () {
   fi
 }
 
+PROXY_TYPES="socks4
+socks5
+http-connect
+http-relay
+"
+
+[[ $PROXY_TYPES =~ $PROXY_TYPE ]] && echo "Proxy Type: $PROXY_TYPE" \
+|| { echo "Unsupported proxy type: $PROXY_TYPE" ; exit 1; }
+
 check_docker
 
 if [[ $# -eq 0 ]] ; then
@@ -97,12 +105,13 @@ for i in "$@"
 do
   case $i in
     --install)
+      echo -e "\nInstalling latest chameleonsocks image"
       source <(wget -O- https://raw.githubusercontent.com/todorez/chameleonsocks/master/chameleonsocks-install.sh) || \
       { echo 'Downloading chameleonsocks failed' ; exit 1; }
     ;;
     --upgrade)
       uninstall
-      echo -e "\nInstall latest chameleonsocks image"
+      echo -e "\nInstalling latest chameleonsocks image"
       source <(wget -O- https://raw.githubusercontent.com/todorez/chameleonsocks/master/chameleonsocks-install.sh) || \
       { echo 'Installing chameleonsocks failed' ; exit 1; }
     ;;

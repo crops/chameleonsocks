@@ -1,3 +1,5 @@
+#!/bin/bash
+
 #
 # Copyright (C) 2016 Intel Corporation
 #
@@ -14,12 +16,11 @@
 # more details.
 #
 
-#!/bin/bash
-
-#read proxy and port from environment if they are set
-if [ ! -z "$PROXY" ] && [ ! -z "$PORT" ]; then
+#read proxy && port && type from environment if they are set
+if [ ! -z "$PROXY" ] && [ ! -z "$PORT" ] && [ ! -z "$PROXY_TYPE" ]; then
  sed -i 's/proxy.mine.com/'$PROXY'/g' /etc/redsocks.conf
  sed -i '/local_port = 1080/!s/port = 1080/port = '$PORT'/g' /etc/redsocks.conf
+ sed -i 's/socks5/'$PROXY_TYPE'/g' /etc/redsocks.conf
 fi;
 
 #Docker stop(SIGTERM) handler
@@ -37,4 +38,3 @@ while true
 do
   tail -f /dev/null & wait ${!}
 done
-
