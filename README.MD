@@ -12,7 +12,7 @@ CHAMELEONSOCKS provides containerized system-wide redsocks-based TCP redirector 
 https://docs.docker.com/engine/installation/#on-linux
 ```
 
-###  2 . Download chameleonsocks installer/upgrade script
+###  2 . Download chameleonsocks.sh script
 
 * **Switch to the root user**
 
@@ -27,7 +27,7 @@ export https_proxy=https://my.proxy.com:port_number
 ```
 
 
-* **Execute the following command to download the installer and make it executable**
+* **Execute the following command to download the script and to make it executable**
 
 ```
 wget https://raw.githubusercontent.com/todorez/chameleonsocks/master/chameleonsocks.sh && chmod 755 chameleonsocks.sh
@@ -35,11 +35,12 @@ wget https://raw.githubusercontent.com/todorez/chameleonsocks/master/chameleonso
 
 ###  3 . Configure your proxy server and exception rules
 
-* **Open chameleonsocks.sh in your favourite text editor and enter your proxy server (PROXY) and proxy server port (PORT)**
+* **Open chameleonsocks.sh in your favourite text editor and enter your proxy server (PROXY), proxy server port (PORT) and proxy server type (PROXY_TYPE). supported PROXY_TYPE values are: socks4, socks5, http-connect, http-relay **
 
   Example:<br>
   PROXY=my.proxy.com<br>
-  PORT=1080
+  PORT=1080<br>
+  PROXY_TYPE=socks5
 
   **NOTE: The installer provides the following proxy exception rules by default. Requests sent to the following subnets will not
   be redirected to the proxy.**
@@ -69,31 +70,56 @@ and add its absolute path to the EXCEPTIONS variable in chameleonsocks.sh.**
 
 *OR*
 
-###  4 . Upgrade existing chameleonsocks installation  ##
+###  4. Upgrade existing chameleonsocks installation  ##
 
 ```
 ./chameleonsocks.sh --upgrade
 ```
 
-#### **CHECK CHAMELEONSOCKS VERSION**
+### 5 . **Start/Stop chameleonsocks**
+
+#### **You can start/stop chameleonsocks in one of two ways:**
+
+* **By using the chameleonsocks.sh script from the command line**
+
+  **Start chameleonsocks**
+  ```
+  ./chameleonsocks.sh --start
+  ```
+
+  **Stop chameleonsocks**
+  ```
+  ./chameleonsocks.sh --stop
+  ```
+
+* **By using the Docker UI interface**
+
+  **Install Docker UI**
+  ```
+  ./chameleonsocks.sh --install-ui
+  ```
+
+  **Open the following URL in your web browser**
+
+  ```
+  http://localhost:7777
+  ```
+
+  Click the "containers" tab -> Select the "chameleonsocks" container -> Start/Stop the container to enable/disable the proxy
+
+  **Uninstall Docker UI**
+
+  ```
+  ./chameleonsocks.sh --uninstall-ui
+  ```
+
+### **Check chameleonsocks version**
 
 ```
-docker exec chameleonsocks cat /etc/chameleonsocks-version
+./chameleonsocks.sh --version
 ```
 
-#### **DISABLING/ENABLING CHAMELEONSOCKS**
-
-* **Install Docker UI**
-
+### **Uninstall chameleonsocks**
 ```
-docker run -d --restart=always -p 7777:9000 --privileged --name dockerui -v /var/run/docker.sock:/var/run/docker.sock dockerui/dockerui
+./chameleonsocks.sh --uninstall
 ```
-
-* **Start/Stop chameleonsocks using the web UI**
-
-```
-http://localhost:7777
-```
-
-Click the "containers" tab -> Select the "chameleonsocks" container -> Start/Stop the container to enable/disable the proxy
-
