@@ -19,7 +19,7 @@
 #
 # Usage:
 #
-# docker build -t todorez/chameleonsocks -f Dockerfile.chameleonsocks .
+# docker build -t crops/chameleonsocks -f Dockerfile.chameleonsocks .
 
 FROM debian:wheezy
 MAINTAINER Todor Minchev <todor.minchev@linux.intel.com>

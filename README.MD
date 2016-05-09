@@ -30,7 +30,7 @@ export https_proxy=https://my.proxy.com:port_number
 * **Execute the following command to download the script and to make it executable**
 
 ```
-wget https://raw.githubusercontent.com/todorez/chameleonsocks/master/chameleonsocks.sh && chmod 755 chameleonsocks.sh
+wget https://raw.githubusercontent.com/crops/chameleonsocks/master/chameleonsocks.sh && chmod 755 chameleonsocks.sh
 ```
 
 ###  3 . Configure your proxy server and exception rules
@@ -58,7 +58,7 @@ wget https://raw.githubusercontent.com/todorez/chameleonsocks/master/chameleonso
 and add its absolute path to the EXCEPTIONS variable in chameleonsocks.sh.**
 
   The default execeptions file can be found here:
-  https://github.com/todorez/chameleonsocks/blob/master/confs/chameleonsocks.exceptions
+  https://github.com/crops/chameleonsocks/blob/master/confs/chameleonsocks.exceptions
 
   Example:<br>
   EXCEPTIONS=/path/to/my/exceptions/chameleonsocks.exceptions

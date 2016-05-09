@@ -33,9 +33,9 @@ if [ "$(id -u)" != "0" ]; then
    exit 1
 fi
 
-IMAGE=todorez/chameleonsocks:latest
+IMAGE=crops/chameleonsocks:latest
 DOCKER_UI=uifd/ui-for-docker
-DEFAULT_EXCEPTIONS=https://raw.githubusercontent.com/todorez/chameleonsocks/master/confs/chameleonsocks.exceptions
+DEFAULT_EXCEPTIONS=https://raw.githubusercontent.com/crops/chameleonsocks/master/confs/chameleonsocks.exceptions
 
 usage () {
   echo -e "\nUsage \n\n$0 [option]\n"
