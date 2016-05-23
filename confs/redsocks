@@ -70,6 +70,11 @@ do_start()
 	awk -F, '{print $1}' /etc/chameleonsocks.exceptions | awk 'NF' |  \
 	xargs -I {} iptables -t nat -A CHAMELEONSOCKS -j RETURN -d {}
 
+##    Add proxy exceptions from PAC file    ##
+
+	curl $PAC_URL | python /etc/pac.py |  \
+	xargs -I {} iptables -t nat -A CHAMELEONSOCKS -j RETURN -d {}
+
 ##     Redirect all unhandles addresses to the proxy             ##
 
 	iptables -t nat -A CHAMELEONSOCKS -p tcp -j REDIRECT --to-ports 1080

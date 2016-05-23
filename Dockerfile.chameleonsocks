@@ -23,13 +23,15 @@
 
 FROM debian:wheezy
 MAINTAINER Todor Minchev <todor.minchev@linux.intel.com>
-ENV CHAMELEONSOCKS_VERSION 1.0
+ENV CHAMELEONSOCKS_VERSION 1.1
 
 # Install dependencies
 RUN apt-get update && apt-get install -y \
 	redsocks \
 	curl \
-	iptables
+	python \
+	python-pip \
+	iptables && pip install iptools
 
 RUN mkdir -p /tmp/chameleonsocks/confs/
 COPY confs /tmp/chameleonsocks/confs/
@@ -37,6 +39,7 @@ RUN chmod 755 /tmp/chameleonsocks/confs/redsocks && \
 chmod 755 /tmp/chameleonsocks/confs/chameleonsocks && \
 mv /tmp/chameleonsocks/confs/redsocks /etc/init.d/ && \
 mv /tmp/chameleonsocks/confs/redsocks.conf /etc/  && \
+mv /tmp/chameleonsocks/confs/pac.py /etc/  && \
 mv /tmp/chameleonsocks/confs/chameleonsocks /bin/ && \
 echo ${CHAMELEONSOCKS_VERSION} > /etc/chameleonsocks-version
 

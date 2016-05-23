@@ -24,6 +24,7 @@ PROXY=my.proxy.com
 PORT=1080
 PROXY_TYPE=socks5
 EXCEPTIONS=/path/to/exceptions/file
+PAC_URL=http://my.server.com/file.pac
 #####################################################################
 ######     DO NOT MODIFY THE FILE BELOW THIS LINE   #################
 #####################################################################
@@ -88,7 +89,7 @@ chameleonsocks_install () {
   { echo "Downloading $IMAGE failed" ; exit 1; }
 
   echo -e "\nCreate chameleonsocks image"
-  docker create --restart=always --privileged --name chameleonsocks --net=host -e PROXY=$PROXY -e PORT=$PORT -e PROXY_TYPE=$PROXY_TYPE $IMAGE || \
+  docker create --restart=always --privileged --name chameleonsocks --net=host -e PROXY=$PROXY -e PORT=$PORT -e PROXY_TYPE=$PROXY_TYPE -e PAC_URL=$PAC_URL $IMAGE  || \
   { echo "Creating $IMAGE image failed" ; exit 1; }
 
   echo -e "\nImport firewall exceptions"
