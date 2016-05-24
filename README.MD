@@ -54,6 +54,11 @@ wget https://raw.githubusercontent.com/crops/chameleonsocks/master/chameleonsock
   172.16.0.0/12<br>
   192.168.0.0/16<br>
 
+  **Chameleonsocks provides support for standard PAC files. Set the PAC_URL variable in chameleonsocks.sh to the URL of your PAC file and the subnet exceptions from the PAC file will be extracted and applied to the chameleonsocks ruleset **
+
+  Example:<br>
+  PAC_URL=http://my.pacfile-server.com<br>
+
 * **To add your own proxy exception rules, please append your subnets or individual ip addresses to the default exceptions file
 and add its absolute path to the EXCEPTIONS variable in chameleonsocks.sh.**
 
