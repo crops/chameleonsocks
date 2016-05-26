@@ -34,9 +34,11 @@ if [ "$(id -u)" != "0" ]; then
    exit 1
 fi
 
-IMAGE=crops/chameleonsocks:latest
+VERSION=1.1
+IMAGE=crops/chameleonsocks:$VERSION
 DOCKER_UI=uifd/ui-for-docker
 DEFAULT_EXCEPTIONS=https://raw.githubusercontent.com/crops/chameleonsocks/master/confs/chameleonsocks.exceptions
+DOCKER_IMAGE=https://github.com/crops/chameleonsocks/releases/download/v$VERSION/chameleonsocks-$VERSION.tar.gz
 
 usage () {
   echo -e "\nUsage \n\n$0 [option]\n"
@@ -85,7 +87,8 @@ uninstall_ui () {
 
 chameleonsocks_install () {
   echo -e "\nDownloading chameleonsocks image"
-  docker pull $IMAGE || \
+	FILENAME=$(basename "$DOCKER_IMAGE")
+	wget $DOCKER_IMAGE && gunzip -c ./$FILENAME | docker load && rm -rf ./$FILENAME || \
   { echo "Downloading $IMAGE failed" ; exit 1; }
 
   echo -e "\nCreate chameleonsocks image"
