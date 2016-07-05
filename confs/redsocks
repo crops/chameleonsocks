@@ -72,8 +72,10 @@ do_start()
 
 ##    Add proxy exceptions from PAC file    ##
 
+if [ ! -z "$PAC_URL" ]; then
 	curl $PAC_URL | python /etc/pac.py |  \
 	xargs -I {} iptables -t nat -A CHAMELEONSOCKS -j RETURN -d {}
+fi;
 
 ##     Redirect all unhandles addresses to the proxy             ##
 

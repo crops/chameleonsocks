@@ -21,17 +21,20 @@
 
 #If you do not provide an exceptions file, the default will be used
 #####################################################################
-# this must be defined or nothing will work
+# This is the domain name or ip address of your proxy server. It must
+# be defined or nothing will work. Do not specify a protocol type
+# such as http:// or https://.
 : ${PROXY:=my.proxy.com}
+# This is the port number of your proxy server
 : ${PORT:=1080}
-#Possible PROXY_TYPE values: socks4, socks5, http-connect, http-relay
+# Possible PROXY_TYPE values: socks4, socks5, http-connect, http-relay
 : ${PROXY_TYPE:=socks5}
 # a file containing local company specific exceptions
 : ${EXCEPTIONS:=/path/to/exceptions/file}
 # Autoproxy url, this is often something like
 # http://autoproxy.server.com or http://wpad.server.com/wpad.out
 # ONLY additional exceptions are pulled from here. not the proxy
-#PAC_URL=http://my.pacfile-server.com<br>
+# ${PAC_URL=http://my.pacfile-server.com}
 
 #####################################################################
 ######     DO NOT MODIFY THE FILE BELOW THIS LINE   #################
@@ -46,7 +49,7 @@ if [ "$(id -u)" = "0" ]; then
     SUDO=""
 fi
 
-VERSION=1.1
+VERSION=1.2
 IMAGE=crops/chameleonsocks:$VERSION
 DOCKER_UI=uifd/ui-for-docker
 DEFAULT_EXCEPTIONS=https://raw.githubusercontent.com/crops/chameleonsocks/master/confs/chameleonsocks.exceptions
