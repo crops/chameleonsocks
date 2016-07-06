@@ -83,7 +83,7 @@ remove_container () {
 uninstall () {
   remove_container chameleonsocks
   echo -e "\nRemove chameleonsocks image"
-  docker rmi $IMAGE || \
+  docker rmi -f $(docker images | awk '$1 ~ /crops[/]chameleonsocks/ { print $3 }') || \
   { echo "Removing $IMAGE image failed" ; exit 1; }
 }
 
