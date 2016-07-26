@@ -1,6 +1,6 @@
 ## CHAMELEONSOCKS
 
-CHAMELEONSOCKS provides containerized system-wide redsocks-based TCP redirector to generic SOCKS or HTTP proxies
+CHAMELEONSOCKS provides containerized system-wide redsocks-based TCP redirector to generic SOCKS or HTTP proxies.  There is a script to aid in the initial setup.  This script pulls a tar.gz and loads it as a docker image. It then creates a persistent container that includes your specific proxy/exception information and that persistent container is what is run to provide redirection. Note: This requires root access since the containers need to be run in privileged mode.
 
 **NOTE: You will need Internet connectivity to run the installer/upgrade script**
 
@@ -54,10 +54,12 @@ wget https://raw.githubusercontent.com/crops/chameleonsocks/master/chameleonsock
   172.16.0.0/12<br>
   192.168.0.0/16<br>
 
-  **Chameleonsocks provides support for standard PAC files. Set the PAC_URL variable in chameleonsocks.sh to the URL of your PAC file and the subnet exceptions from the PAC file will be extracted and applied to the chameleonsocks ruleset **
+  **Chameleonsocks provides support for standard PAC or WPAD (Web Proxy Auto Discovery) files. Set the PAC_URL variable in chameleonsocks.sh to the URL of your PAC file or WPAD file and the subnet exceptions from the PAC file will be extracted and applied to the chameleonsocks ruleset.  Note: ONLY exceptions will be pulled from the PAC_URL file, not the proxy itself. **
 
   Example:<br>
   PAC_URL=http://my.pacfile-server.com<br>
+-or-<br>
+  PAC_URL=http://my.wpad-server.com/wpad.dat<br>
 
 * **To add your own proxy exception rules, please append your subnets or individual ip addresses to the default exceptions file
 and add its absolute path to the EXCEPTIONS variable in chameleonsocks.sh.**
@@ -128,3 +130,39 @@ and add its absolute path to the EXCEPTIONS variable in chameleonsocks.sh.**
 ```
 ./chameleonsocks.sh --uninstall
 ```
+### **Troubleshooting/Tips**
+If you want to try different combinations because your proxy got moved
+or because you discover that the XXX proxy is much faster for you,
+you can quickly do the following:<br>
+To get the initial image (where myproxy.com:8080 is your https proxy):<br>
+```
+https_proxy=https://myproxy.com:8080 ./chameleonsocks.sh --install
+```
+You can tell if you have the initial docker image by doing
+```
+docker images | grep chameleon
+```
+and you should see something like: crops/chameleonsocks  VERSION (1.X)...<br>
+To try different settings you can either edit the chameleonsocks.sh file or prepend environment variables to the call.
+```
+PROXY=myproxy.com PAC_URL=http://autoproxy.mycomp.com ./chameleonsocks.sh --start
+```
+To retry do:
+```
+ ./chameleonsocks.sh --stop && docker rm chameleonsocks
+PROXY=myproxy2.com PAC_URL=http://autoproxy.mycomp.com ./chameleonsocks.sh --start
+```
+If you want to stop and start chameleonsocks without using the script after having made the container
+the first time (which DOES need the script), do:
+```
+docker stop chameleonsocks
+docker start chameleonsocks
+```
+To see what may be wrong, you can do:
+```
+docker logs chameleonsocks
+```
+Note: if you are using a proxy.pac type autoconfig for your exceptions, it can take some time
+(?30 seconds?) to get the file and have the container start routing.  If you're autoproxy breaks,
+you need to redo the install and not set the autoproxy (PAC_URL).  This will give you just the
+default exceptions.
