@@ -3,7 +3,21 @@
 CHAMELEONSOCKS provides containerized system-wide redsocks-based TCP redirector to generic SOCKS or HTTP proxies.  There is a script to aid in the initial setup.  This script pulls a tar.gz and loads it as a docker image. It then creates a persistent container that includes your specific proxy/exception information and that persistent container is what is run to provide redirection. Note: This requires root access since the containers need to be run in privileged mode.
 
 **NOTE: You will need Internet connectivity to run the installer/upgrade script**
+##  Quickstart Instructions
 
+### 1 . Download the installer and make it executable
+
+```
+https_proxy=https://myproxy.mycomp.com:<port> wget https://raw.githubusercontent.com/crops/chameleonsocks/master/chameleonsocks.sh && chmod 755 chameleonsocks.sh
+```
+### 2 . Run the installer with the minimum number of required args
+
+```
+https_proxy=https://myproxy.mycomp.com:<port> PROXY=mysocksproxy.mycomp.com PORT=<socksproxyport> PAC_URL=http://wpad.mycomp.com/wpad.dat ./chameleonsocks.sh --install
+```
+
+
+## Extended Instructions
 ###  1 . Install Docker
 
 **Install Docker by following the official instructions for your distribution**
