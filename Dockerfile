@@ -23,7 +23,7 @@
 
 FROM debian:wheezy
 MAINTAINER Todor Minchev <todor.minchev@linux.intel.com>
-ENV CHAMELEONSOCKS_VERSION 1.1
+ENV CHAMELEONSOCKS_VERSION 1.2
 
 # Install dependencies
 RUN apt-get update && apt-get install -y \

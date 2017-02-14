@@ -1,5 +1,5 @@
-#!/bin/bash
-#
+#!/usr/bin/env bash
+
 # Copyright (C) 2016 Intel Corporation
 #
 # Author: Todor Minchev <todor.minchev@linux.intel.com>
@@ -14,8 +14,6 @@
 # FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
 # more details.
 #
-
-#!/usr/bin/env bash
 
 #Insert your PROXY, PORT and PROXY_TYPE below
 
@@ -40,13 +38,32 @@
 ######     DO NOT MODIFY THE FILE BELOW THIS LINE   #################
 #####################################################################
 
-SUDO=`which sudo`
-if [ ${SUDO} == "" ] && [ "$(id -u)" != "0" ]; then
-   echo "Need sudo for this to run or you need to be root" 1>&2
-   exit 1
-fi
-if [ "$(id -u)" = "0" ]; then
+case "$(uname -s)" in
+  Darwin)
+    OS="Mac"
+  ;;
+  Linux)
+    OS="Linux"
+  ;;
+  CYGWIN*|MINGW*|MSYS*)
+    OS="Win"
+  ;;
+  *)
+    OS="Other"
+  ;;
+esac
+
+if [ "$OS" == "Win" ]; then
+  SUDO=""
+else
+  SUDO=`which sudo`
+  if [ "${SUDO}" == "" ] && [ "$(id -u)" != "0" ]; then
+    echo "Need sudo for this to run or you need to be root" 1>&2
+    exit 1
+  fi
+  if [ "$(id -u)" = "0" ]; then
     SUDO=""
+  fi
 fi
 
 VERSION=1.2
@@ -58,14 +75,15 @@ DOCKER_IMAGE=https://github.com/crops/chameleonsocks/releases/download/v$VERSION
 usage () {
   echo -e "\nUsage \n\n$0 [option]\n"
   echo -e "Options:\n"
-  echo -e "--install      : Install chameleonsocks"
-  echo -e "--upgrade      : Upgrade existing installation"
-  echo -e "--uninstall    : Uninstall chameleonsocks"
-  echo -e "--install-ui   : Install container management UI"
-  echo -e "--uninstall-ui : Uninstall container management UI"
-  echo -e "--start        : Stop chameleonsocks"
-  echo -e "--stop         : Start chameleonsocks"
-  echo -e "--version      : Display chameleonsocks version\n"
+  echo -e "--install             : Install chameleonsocks from remote image"
+  echo -e "--install_local image : Install chameleonsocks from local image"
+  echo -e "--upgrade             : Upgrade existing installation"
+  echo -e "--uninstall           : Uninstall chameleonsocks"
+  echo -e "--install-ui          : Install container management UI"
+  echo -e "--uninstall-ui        : Uninstall container management UI"
+  echo -e "--start               : Stop chameleonsocks"
+  echo -e "--stop                : Start chameleonsocks"
+  echo -e "--version             : Display chameleonsocks version\n"
   exit 1;
 }
 
@@ -101,44 +119,44 @@ uninstall_ui () {
 }
 
 chameleonsocks_start () {
-    if docker start chameleonsocks > /dev/null 2>&1; then
-	echo "started"
-	return
-    else
-	echo "No Existing Container. Trying to recreate one..."
+  if docker start chameleonsocks > /dev/null 2>&1; then
+    echo "started"
+    return
+  else
+    echo "No Existing Container. Trying to recreate one..."
+  fi
+  if [ "$PROXY" = "my.proxy.com" ] ||  [ "x$PROXY" = "x" ]; then
+    echo "PROXY must be set either in this file (above) or in the environment"
+    exit 1;
+  fi
+
+  echo -e "\nCreate chameleonsocks container"
+  ${SUDO} docker create --restart=always --privileged --name chameleonsocks --net=host -e PROXY=$PROXY -e PORT=$PORT -e PROXY_TYPE=$PROXY_TYPE -e PAC_URL=$PAC_URL $IMAGE  || \
+  { echo "Creating $IMAGE image failed" ; exit 1; }
+
+  echo -e "\nImport firewall exceptions"
+  if [ ! -f $EXCEPTIONS ]; then
+    echo "Overriding exceptions with default exceptions"
+    EXCEPTIONS=`pwd`/chameleonsocks.exceptions
+    if [ ! -f $EXCEPTIONS ] && [ "$OS" != "Win" ]; then
+      echo "Grabbing default exceptions from chameleonsocks github"
+      wget $DEFAULT_EXCEPTIONS
     fi
-    if [ "$PROXY" = "my.proxy.com" ] ||  [ "x$PROXY" = "x" ]; then
-	echo "PROXY must be set either in this file (above) or in the environment"
-	exit 1;
-    fi
+    docker cp $EXCEPTIONS chameleonsocks:/etc/chameleonsocks.exceptions || \
+      if [ "$OS" != "Win" ]; then
+        { echo "Importing exceptions file failed" ; exit 1; }
+      fi
+    rm -rf $EXCEPTIONS
+  else
+    echo "Using $EXCEPTIONS for chameleonsocks exceptions if these do not "
+    echo "include the default exceptions, you may want to add them"
+    docker cp $EXCEPTIONS chameleonsocks:/etc/chameleonsocks.exceptions || \
+    { echo "Importing exceptions file failed" ; exit 1; }
+  fi
 
-    echo -e "\nCreate chameleonsocks image"
-    ${SUDO} docker create --restart=always --privileged --name chameleonsocks --net=host -e PROXY=$PROXY -e PORT=$PORT -e PROXY_TYPE=$PROXY_TYPE -e PAC_URL=$PAC_URL $IMAGE  || \
-	{ echo "Creating $IMAGE image failed" ; exit 1; }
-
-    echo -e "\nImport firewall exceptions"
-    if [ ! -f $EXCEPTIONS ]; then
-	echo "Overriding exceptions with default exceptions"
-	EXCEPTIONS=`pwd`/chameleonsocks.exceptions
-	if [ ! -f $EXCEPTIONS ]; then
-	    echo "Grabbing default exceptions from chameleonsocks github"
-	    wget $DEFAULT_EXCEPTIONS
-	fi
-	docker cp $EXCEPTIONS chameleonsocks:/etc/chameleonsocks.exceptions || \
-	    { echo "Importing exceptions file failed" ; exit 1; }
-	rm -rf $EXCEPTIONS
-    else
-	echo "Using $EXCEPTIONS for chameleonsocks exceptions if these do not "
-	echo "include the default exceptions, you may want to add them"
-	docker cp $EXCEPTIONS chameleonsocks:/etc/chameleonsocks.exceptions || \
-	    { echo "Importing exceptions file failed" ; exit 1; }
-    fi
-
-    echo -e "\nStarting chameleonsocks container"
-    docker start chameleonsocks || \
-	{ echo "Startinging chameleonsocks container failed" ; exit 1; }
-
-
+  echo -e "\nStarting chameleonsocks container"
+  docker start chameleonsocks || \
+  { echo "Startinging chameleonsocks container failed" ; exit 1; }
 }
 
 chameleonsocks_install () {
@@ -148,9 +166,25 @@ else
     echo -e "\nDownloading chameleonsocks image"
     FILENAME=$(basename "$DOCKER_IMAGE")
     wget $DOCKER_IMAGE && gunzip -c ./$FILENAME | docker load && rm -rf ./$FILENAME || \
-	{ echo "Downloading $IMAGE failed" ; exit 1; }
+  { echo "Downloading $IMAGE failed" ; exit 1; }
 fi
     chameleonsocks_start
+}
+
+chameleonsocks_install_local () {
+if docker images $IMAGE | grep -q chameleonsocks; then
+    echo -e "$IMAGE found. Skipping the reload. \nDo $0 --uninstall to force"
+else
+    if [ ! -f $LOCAL_DOCKER_IMAGE ]; then
+      echo "Local chameleonsocks $LOCAL_DOCKER_IMAGE image not found"
+      exit 1;
+    fi
+    echo -e "\nLoading local chameleonsocks image"
+    gunzip -c $LOCAL_DOCKER_IMAGE | docker load || \
+      { echo "Loading of $IMAGE failed" ; exit 1; }
+fi
+    chameleonsocks_start
+    exit 1;
 }
 
 PROXY_TYPES="socks4
@@ -204,7 +238,17 @@ do
       { echo 'Getting chameleonsocks version failed' ; exit 1; }
     ;;
     *)
-      usage
+      # are we trying to install a local image?
+      if [[ $# -eq 2 ]] ; then
+        if [ "$1" == "--install_local" ]; then
+          LOCAL_DOCKER_IMAGE=$2
+          chameleonsocks_install_local
+        else
+          usage
+        fi
+      else
+        usage
+      fi
     ;;
   esac
 done
