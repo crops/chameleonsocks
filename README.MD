@@ -28,12 +28,6 @@ https://docs.docker.com/engine/installation/#on-linux
 
 ###  2 . Download chameleonsocks.sh script
 
-* **Switch to the root user**
-
-```
-su root
-```
-
 * **Set https_proxy environment variable so you can download the installer**
 
 ```
@@ -144,6 +138,26 @@ and add its absolute path to the EXCEPTIONS variable in chameleonsocks.sh.**
 ```
 ./chameleonsocks.sh --uninstall
 ```
+
+### **NOTE: Instructions for installing chameleonsocks with Docker Toolbox on Windows**
+
+*  **Download the installer script with your favourte web browser**
+
+   *  https://raw.githubusercontent.com/crops/chameleonsocks/master/chameleonsocks.sh
+
+*  **Download the chameleonsocks image with your favourte web browser**
+
+   *  https://github.com/crops/chameleonsocks/releases/download/v1.2/chameleonsocks-1.2.tar.gz
+
+*  **Launch Docker Quickstart Terminal and navige to the directory where the installer and the image were downloaded**
+
+*  **Install chameleonsocks with the following command**
+
+  ```
+  ./chameleonsocks.sh --install_local chameleonsocks-1.2.tar.gz
+
+  ```
+
 ### **Troubleshooting/Tips**
 If you want to try different combinations because your proxy got moved
 or because you discover that the XXX proxy is much faster for you,
