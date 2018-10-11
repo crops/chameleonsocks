@@ -21,7 +21,7 @@
 #
 # docker build -t crops/chameleonsocks -f Dockerfile .
 
-FROM debian:wheezy
+FROM debian
 MAINTAINER Todor Minchev <todor.minchev@linux.intel.com>
 ENV CHAMELEONSOCKS_VERSION 1.2
 
